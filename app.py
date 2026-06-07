@@ -1,12 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime
-import json
-import os
 
 app = Flask(__name__)
 app.secret_key = "campuscash2026"
 
-# In-memory storage
 users = {}
 transactions = {}
 
@@ -23,12 +20,7 @@ def register():
     password = data.get('password')
     if matric in users:
         return jsonify({'success': False, 'message': 'Matric number already registered!'})
-    users[matric] = {
-        'name': name,
-        'matric': matric,
-        'department': department,
-        'password': password
-    }
+    users[matric] = {'name': name, 'matric': matric, 'department': department, 'password': password}
     transactions[matric] = []
     session['user'] = matric
     return jsonify({'success': True, 'name': name})
@@ -76,7 +68,6 @@ def get_data():
     income = sum(t['amount'] for t in user_transactions if t['type'] == 'income')
     expenses = sum(t['amount'] for t in user_transactions if t['type'] == 'expense')
     balance = income - expenses
-    # Category breakdown
     categories = {}
     for t in user_transactions:
         if t['type'] == 'expense':
@@ -102,4 +93,4 @@ def delete_transaction():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000, debug=False)
